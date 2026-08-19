@@ -4,6 +4,12 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 logger.setLevel("INFO")
 
+""" 
+THERE ARE SOME BROKEN AND UNDECIDED THINGS SUCH AS RETURN VALUES AND SOME ERROR 
+MANAGEMENTS, LACKS SOME LOGS AND TYPE HINTS AS WELL, NEED TO FIX SOME STINKY 
+STUFF, dict_testing IS A SHITTY NAME AND HAS NO PREVENTING ERRORS THINGY
+"""
+
 
 def temporary_test_copy(directory):
     if not directory:
@@ -38,11 +44,15 @@ def find_dir(dir_name: str) -> Path | None:
     return None
 
 
-def dict_testing(directory: Path):
+def dict_testing(directory: Path | None):
 
     result = {}
-    result["files"] = [file.name for file in directory.iterdir() if file.is_file()]
-    result["dirs"] = [folder.name for folder in directory.iterdir() if folder.is_dir()]
+    result["files"] = [
+        Path(file.name) for file in directory.iterdir() if file.is_file()
+    ]
+    result["dirs"] = [
+        Path(folder.name) for folder in directory.iterdir() if folder.is_dir()
+    ]
 
     return result
 
