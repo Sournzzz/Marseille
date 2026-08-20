@@ -43,8 +43,12 @@ def dict_testing(directory: Path):
     if not directory:
         return
     result = {}
-    result["files"] = [file for file in directory.iterdir() if file.is_file()]
-    result["dirs"] = [folder for folder in directory.iterdir() if folder.is_dir()]
+    result["files"] = [
+        Path(file.name) for file in directory.iterdir() if file.is_file()
+    ]
+    result["dirs"] = [
+        Path(folder.name) for folder in directory.iterdir() if folder.is_dir()
+    ]
 
     return result
 
