@@ -6,6 +6,17 @@ logger.setLevel("INFO")
 
 
 class DirContext:
+    common_compound_suffixes = {
+        ".tar.gz",
+        ".tar.bz2",
+        ".tar.txz",
+        ".tar.zst",
+        ".tar.lz",
+        ".tar.Z",
+        ".mesh.xml",
+        ".skeleton.xml",
+    }
+
     def __init__(self, dir_path):
         self.dir_path = Path(dir_path)
         self.home_path = Path.home()
@@ -19,6 +30,7 @@ class DirContext:
             return True
 
         logger.warning("Directory not found %s", self.full_path)
+        return False
 
     def copy_dir(self):
         copy_dir_path = self.full_path.parent / (self.full_path.name + "_copy")
@@ -32,6 +44,7 @@ class DirContext:
 
             shutil.copytree(self.full_path, copy_dir_path)
             logger.info("Success! Created: %s", copy_dir_path)
+            self.full_path = copy_dir_path
 
             return True
 
@@ -44,55 +57,30 @@ class DirContext:
             return False
 
     def dict_dir(self):
-        pass
+        dict_structure = {}
 
+        dict_structure["files"] = [
+            Path(file.name) for file in self.full_path.iterdir() if file.is_file()
+        ]
 
-def temporary_test_copy(directory):
-    if not directory:
-        logger.error("Directory doesn't exist, couln't make a copy")
-        return
-    directory_name = directory.name + "_test"
-    destination_directory = directory.parent / directory_name
+        dict_structure["dirs"] = [
+            Path(folder.name) for folder in self.full_path.iterdir() if folder.is_dir()
+        ]
 
-    try:
-        logger.info("Starting copy of the [%s] directory", directory.name)
-        shutil.copytree(directory, destination_directory)
+        dict_structure["extensions"] = set()
 
-    except FileExistsError:
-        logger.error(
-            "The [%s] directory already exists. Couldn't make copy.", directory_name
-        )
+        for file in dict_structure["files"]:
+            suffix_tracker = file.suffixes
 
-    return destination_directory
-
-
-def find_dir(dir_name: str) -> Path | None:
-
-    path = Path.home() / dir_name
-
-    logger.info("Looking for: %s", dir_name)
-
-    for directory in Path.home().iterdir():
-        if directory == path:
-            logger.info("Path found: %s", path)
-            return path
-
-    logger.error("%s: Directory not found", dir_name)
-    return None
-
-
-def dict_testing(directory: Path):
-    if not directory:
-        return
-    result = {}
-    result["files"] = [
-        Path(file.name) for file in directory.iterdir() if file.is_file()
-    ]
-    result["dirs"] = [
-        Path(folder.name) for folder in directory.iterdir() if folder.is_dir()
-    ]
-
-    return result
+            if (
+                len(suffix_tracker) >= 2
+                and "".join(suffix_tracker) in self.common_compound_suffixes
+            ):
+                dict_structure["extensions"].add("".join(file.suffixes).lower())
+            elif file.suffix:
+                dict_structure["extensions"].add(file.suffix.lower())
+            else:
+                continue  # Here goes a loggy
 
 
 if __name__ == "__main__":
