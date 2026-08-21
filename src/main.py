@@ -1,6 +1,7 @@
 import logging
 from pprint import pprint
-from utilities import find_dir, temporary_test_copy, dict_testing
+from utilities import DirContext
+
 
 logging.basicConfig(
     format="{asctime} - {levelname} - {message}",
@@ -11,9 +12,9 @@ logging.basicConfig(
 
 
 def main():
-    test_dir = find_dir("Downloads")
-    test_copy_dir = temporary_test_copy(test_dir)
-    pprint(dict_testing(test_copy_dir))
+    test_dir = DirContext("Downloads")
+    test_dir.find_dir()
+    test_dir.copy_dir()
 
 
 main()

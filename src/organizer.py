@@ -4,7 +4,8 @@ from pprint import pprint
 
 
 class Organize:
-    common_compound_suffixes = [
+    # TO DO: MOVE THIS TO AN EXTERNAL CONFIG FILE
+    common_compound_suffixes = {
         ".tar.gz",
         ".tar.bz2",
         ".tar.txz",
@@ -13,7 +14,7 @@ class Organize:
         ".tar.Z",
         ".mesh.xml",
         ".skeleton.xml",
-    ]
+    }
 
     def __init__(self, directory) -> None:
         self.directory = directory
