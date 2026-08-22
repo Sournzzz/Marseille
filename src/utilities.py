@@ -60,11 +60,15 @@ class DirContext:
         dict_structure = {}
 
         dict_structure["files"] = [
-            Path(file.name) for file in self.full_path.iterdir() if file.is_file()
+            Path(file.name.lower())
+            for file in self.full_path.iterdir()
+            if file.is_file()
         ]
 
         dict_structure["dirs"] = [
-            Path(folder.name) for folder in self.full_path.iterdir() if folder.is_dir()
+            Path(folder.name.lower())
+            for folder in self.full_path.iterdir()
+            if folder.is_dir()
         ]
 
         dict_structure["extensions"] = set()
@@ -81,6 +85,37 @@ class DirContext:
                 dict_structure["extensions"].add(file.suffix.lower())
             else:
                 continue  # Here goes a loggy
+
+    def dict_dir2(self):
+        dict_structure = {}
+
+        dict_structure["dirs"] = [
+            Path(folder.name) for folder in self.full_path.iterdir() if folder.is_dir()
+        ]
+
+        dict_structure["files"] = {}
+
+        for file in self.full_path.iterdir():
+            if file.is_file():
+                suffix_tracker = file.suffixes
+
+                if (
+                    len(suffix_tracker) >= 2
+                    and "".join(suffix_tracker).lower() in self.common_compound_suffixes
+                ):
+                    dict_structure["files"].setdefault(
+                        "".join(suffix_tracker).lower(), []
+                    ).append(Path(file.name))
+
+                elif file.suffix:
+                    dict_structure["files"].setdefault(file.suffix.lower(), []).append(
+                        Path(file.name)
+                    )
+
+                else:
+                    continue
+
+        return dict_structure
 
 
 if __name__ == "__main__":

@@ -15,6 +15,7 @@ def main():
     test_dir = DirContext("Downloads")
     test_dir.find_dir()
     test_dir.copy_dir()
+    pprint(test_dir.dict_dir2())
 
 
 main()
