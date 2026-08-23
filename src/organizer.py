@@ -7,17 +7,34 @@ logger = logging.getLogger(__name__)
 logger.setLevel("INFO")
 
 
-class Organize:
-    def __init__(self, directory) -> None:
-        self.directory = directory
+class Organizer:
+    def __init__(self, context: DirContext) -> None:
+        self.context = context
 
-    def organizer(self, dict_dir):
+    def organizer(self):
+        logger.info("Ensuring the directory")
 
-        if not self.directory:
+        if not self.context:
+            logger.warning("Couldn't find %s", self.context)
             return
-        
-    for file in self.directory.iterdir():
-        
+
+        dir_dict = self.context.dict_dir()
+
+        for extension in dir_dict["files"]:
+            if extension not in dir_dict["dirs"]:
+                extension_path = self.context.full_path / Path(
+                    extension.replace(".", "")
+                )
+                extension_path.mkdir()
+
+            for file in dir_dict["files"][extension]:
+                try:
+                    shutil.move(self.context.full_path / file, extension_path)
+                except Exception as e:
+                    logger.warning("Couldn't move file:\n%s", e)
+
 
 if __name__ == "__main__":
-    path_test = DirContext("Downloads")
+    context_test = DirContext("Downloads_copy")
+    organizer_test = Organizer(context_test)
+    organizer_test.organizer()

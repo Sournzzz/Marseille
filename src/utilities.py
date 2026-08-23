@@ -59,36 +59,6 @@ class DirContext:
     def dict_dir(self):
         dict_structure = {}
 
-        dict_structure["files"] = [
-            Path(file.name.lower())
-            for file in self.full_path.iterdir()
-            if file.is_file()
-        ]
-
-        dict_structure["dirs"] = [
-            Path(folder.name.lower())
-            for folder in self.full_path.iterdir()
-            if folder.is_dir()
-        ]
-
-        dict_structure["extensions"] = set()
-
-        for file in dict_structure["files"]:
-            suffix_tracker = file.suffixes
-
-            if (
-                len(suffix_tracker) >= 2
-                and "".join(suffix_tracker) in self.common_compound_suffixes
-            ):
-                dict_structure["extensions"].add("".join(file.suffixes).lower())
-            elif file.suffix:
-                dict_structure["extensions"].add(file.suffix.lower())
-            else:
-                continue  # Here goes a loggy
-
-    def dict_dir2(self):
-        dict_structure = {}
-
         dict_structure["dirs"] = [
             Path(folder.name) for folder in self.full_path.iterdir() if folder.is_dir()
         ]
