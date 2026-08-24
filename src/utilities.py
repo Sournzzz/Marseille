@@ -9,13 +9,13 @@ logger.setLevel("INFO")
 
 
 class DirContext:
-    def __init__(self, dir_path):
+    def __init__(self, dir_path: str | Path) -> None:
         self.dir_path = Path(dir_path)
         self.home_path = Path.home()
         self.full_path = self.home_path / self.dir_path
         self.common_compound_suffixes = COMMON_COMPOUND_SUFFIXES
 
-    def find_dir(self):
+    def find_dir(self) -> bool:
         logger.info("Looking for: %s", self.full_path)
 
         if self.full_path.exists():
@@ -25,7 +25,7 @@ class DirContext:
         logger.warning("Directory not found %s", self.full_path)
         return False
 
-    def copy_dir(self):
+    def copy_dir(self) -> bool:
         copy_dir_path = self.full_path.parent / (self.full_path.name + "_copy")
 
         try:
@@ -49,8 +49,8 @@ class DirContext:
 
             return False
 
-    def dict_dir(self):
-        dict_structure = {}
+    def dict_dir(self) -> dict[str, list[Path] | dict[str, list[Path]]]:
+        dict_structure: dict[str, list[Path] | dict[str, list[Path]]] = {}
 
         dict_structure["dirs"] = [
             Path(folder.name) for folder in self.full_path.iterdir() if folder.is_dir()

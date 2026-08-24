@@ -11,7 +11,7 @@ class Organizer:
     def __init__(self, context: DirContext) -> None:
         self.context = context
 
-    def organizer(self):
+    def organizer(self) -> None:
         logger.info("Ensuring the directory")
 
         dir_dict = self.context.dict_dir()
@@ -36,7 +36,7 @@ class Organizer:
 
                 shutil.move(self.context.full_path / file, extension_path)
 
-    def file_dname_formatter(self, file):
+    def file_dname_formatter(self, file: Path) -> Path:
         # I NEED TO SEPARATE THE  NUMBER OF (n) from the file name and verify it first
 
         fpattern = re.search(r"\(\d+\)", file.name)
