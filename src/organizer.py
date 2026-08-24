@@ -22,16 +22,27 @@ class Organizer:
 
         for extension in dir_dict["files"]:
             if extension not in dir_dict["dirs"]:
-                extension_path = self.context.full_path / Path(
-                    extension.replace(".", "")
-                )
-                extension_path.mkdir()
+                extension_path = self.context.full_path / extension.replace(".", "")
+            else:
+                dir_index = dir_dict["dirs"].index(extension)
+                extension_path = self.context.full_path / dir_dict["dirs"][dir_index]
+
+            extension_path.mkdir()
 
             for file in dir_dict["files"][extension]:
-                try:
-                    shutil.move(self.context.full_path / file, extension_path)
-                except Exception as e:
-                    logger.warning("Couldn't move file:\n%s", e)
+                if (self.context.full_path / extension_path / file).exists():
+                    pass
+
+                shutil.move(self.context.full_path / file, extension_path)
+
+    def file_dname_formatter(self, file):
+        compound_suffixes = self.context.common_compound_suffixes
+
+        fsuffixes = file.suffixes
+        fname = file.name.split(".")[0]
+
+        if fsuffixes > 2 and fsuffixes in compound_suffixes:
+            file = file.replace(f"{fname}.", f"{fname}(1).")
 
 
 if __name__ == "__main__":

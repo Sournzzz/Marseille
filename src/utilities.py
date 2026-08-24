@@ -1,26 +1,17 @@
 import shutil, logging
 from pathlib import Path
+from constants import COMMON_COMPOUND_SUFFIXES
 
 logger = logging.getLogger(__name__)
 logger.setLevel("INFO")
 
 
 class DirContext:
-    common_compound_suffixes = {
-        ".tar.gz",
-        ".tar.bz2",
-        ".tar.txz",
-        ".tar.zst",
-        ".tar.lz",
-        ".tar.Z",
-        ".mesh.xml",
-        ".skeleton.xml",
-    }
-
     def __init__(self, dir_path):
         self.dir_path = Path(dir_path)
         self.home_path = Path.home()
         self.full_path = self.home_path / self.dir_path
+        self.common_compound_suffixes = COMMON_COMPOUND_SUFFIXES
 
     def find_dir(self):
         logger.info("Looking for: %s", self.full_path)
