@@ -14,33 +14,31 @@ class Organizer:
     def organizer(self):
         logger.info("Ensuring the directory")
 
-        if not self.context:
-            logger.warning("Couldn't find %s", self.context)
-            return
-
         dir_dict = self.context.dict_dir()
 
-        for extension in dir_dict["files"]:
-            if extension not in dir_dict["dirs"].lower():
-                extension_path = self.context.full_path / extension.replace(".", "")
-            else:
-                dir_index = dir_dict["dirs"].index(extension)
-                extension_path = self.context.full_path / dir_dict["dirs"][dir_index]
+        if not dir_dict:
+            logger.warning("Couldn't create dir for: %s", self.context.full_path)
+            return
 
-            extension_path.mkdir()
+        existing_dirs = {d.name.lower(): d for d in dir_dict["dirs"]}
+
+        for extension in dir_dict["files"]:
+            if extension in existing_dirs:
+                extension_path = self.context.full_path / existing_dirs[extension]
+            else:
+                extension_path = self.context.full_path / extension
+
+            extension_path.mkdir(exist_ok=True)
 
             for file in dir_dict["files"][extension]:
-                if (self.context.full_path / extension_path / file).exists():
-                    pass
+                if (extension_path / file).exists():
+                    file = self.file_dname_formatter(file)
 
                 shutil.move(self.context.full_path / file, extension_path)
 
     def file_dname_formatter(self, file):
         # I NEED TO SEPARATE THE  NUMBER OF (n) from the file name and verify it first
-        compound_suffixes = self.context.common_compound_suffixes
 
-        fsuffixes = file.suffixes
-        fname = file.name.split(".")[0]
         fpattern = re.search(r"\(\d+\)", file.name)
 
         if fpattern:
@@ -48,9 +46,10 @@ class Organizer:
             file_number = re.search(r"\d+", file.name[index1:index2])
             new_file_number = str(int(file_number.group()) + 1)
             file = file.parent / file.name.replace(file_number.group(), new_file_number)
+        else:
+            pass  # HERE GOES IN CASE THE FILE EXISTS BUT DOESN'T HAVE ALREADY A "(n)" INSIDE THE FOLDER
 
-        if len(fsuffixes) > 2 and "".join(fsuffixes) in compound_suffixes:
-            filename = file.name
+        return file
 
 
 if __name__ == "__main__":
