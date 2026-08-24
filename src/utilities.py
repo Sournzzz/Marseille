@@ -1,6 +1,8 @@
 import shutil, logging
 from pathlib import Path
 from constants import COMMON_COMPOUND_SUFFIXES
+from pprint import pprint
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel("INFO")
@@ -65,15 +67,16 @@ class DirContext:
                     and "".join(suffix_tracker).lower() in self.common_compound_suffixes
                 ):
                     dict_structure["files"].setdefault(
-                        "".join(suffix_tracker).lower(), []
+                        "".join(suffix_tracker).lower().replace(".", ""), []
                     ).append(Path(file.name))
 
                 elif file.suffix:
-                    dict_structure["files"].setdefault(file.suffix.lower(), []).append(
-                        Path(file.name)
-                    )
+                    dict_structure["files"].setdefault(
+                        file.suffix.lower().replace(".", ""), []
+                    ).append(Path(file.name))
 
                 else:
+                    # NEED TO ADD A LOG HERE
                     continue
 
         return dict_structure
@@ -83,3 +86,4 @@ if __name__ == "__main__":
     directory = DirContext("Downloads")
     directory.find_dir()
     directory.copy_dir()
+    pprint(directory.dict_dir())

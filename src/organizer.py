@@ -21,8 +21,8 @@ class Organizer:
         dir_dict = self.context.dict_dir()
 
         for extension in dir_dict["files"]:
-            if extension not in dir_dict["dirs"]:
-                extension_path = self.context.full_path / extension.replace(".", "")
+            if extension not in dir_dict["dirs"].lower():
+                extension_path = self.context.full_path / extension
             else:
                 dir_index = dir_dict["dirs"].index(extension)
                 extension_path = self.context.full_path / dir_dict["dirs"][dir_index]
