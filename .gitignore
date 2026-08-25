@@ -5,6 +5,9 @@ build/
 dist/
 wheels/
 *.egg-info
-*.log 
+*.log
+./testing_trash/
+./ideas_Marseile.md
+./corrections_and_plans.md
 # Virtual environments
 .venv
