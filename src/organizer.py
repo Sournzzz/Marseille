@@ -33,9 +33,12 @@ class Organizer:
             for file in dir_dict["files"][extension]:
                 if (extension_path / file).exists():
                     new_name = self.file_dname_formatter(file)
-                    file.rename(new_name)
-
-                shutil.move(self.context.full_path / file, extension_path)
+                    source_name = self.context.full_path / file
+                    destination = self.context.full_path / new_name
+                    source_name.rename(new_name)
+                    shutil.move(destination, extension_path)
+                else:
+                    shutil.move(self.context.full_path / file, extension_path)
 
     def file_dname_formatter(self, converted_file: Path) -> Path:
         # I NEED TO SEPARATE THE  NUMBER OF (n) from the file name and verify it first
