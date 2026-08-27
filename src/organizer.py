@@ -33,10 +33,15 @@ class Organizer:
             for file in dir_dict["files"][extension]:
                 if (extension_path / file).exists():
                     new_name = self.file_dname_formatter(file)
+
+                    while (extension_path / new_name).exists():
+                        new_name = self.file_dname_formatter(new_name)
+
                     source_name = self.context.full_path / file
-                    destination = self.context.full_path / new_name
-                    source_name.rename(new_name)
-                    shutil.move(destination, extension_path)
+                    new_path = self.context.full_path / new_name
+
+                    source_name.rename(new_path)
+                    shutil.move(new_path, extension_path)
                 else:
                     shutil.move(self.context.full_path / file, extension_path)
 
