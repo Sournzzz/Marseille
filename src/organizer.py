@@ -1,7 +1,7 @@
 from pathlib import Path
 from utilities import DirContext
 from pprint import pprint
-import logging, shutil, regex as re
+import logging, shutil, re
 
 logger = logging.getLogger(__name__)
 logger.setLevel("INFO")
@@ -32,24 +32,45 @@ class Organizer:
 
             for file in dir_dict["files"][extension]:
                 if (extension_path / file).exists():
-                    file = self.file_dname_formatter(file)
+                    new_name = self.file_dname_formatter(file)
+                    file.rename(new_name)
 
                 shutil.move(self.context.full_path / file, extension_path)
 
-    def file_dname_formatter(self, file: Path) -> Path:
+    def file_dname_formatter(self, converted_file: Path) -> Path:
         # I NEED TO SEPARATE THE  NUMBER OF (n) from the file name and verify it first
 
-        fpattern = re.search(r"\(\d+\)", file.name)
+        compound_suffixes = self.context.common_compound_suffixes
+
+        fpattern = re.search(r".*\(\d+\)", converted_file.name)
 
         if fpattern:
             index1, index2 = fpattern.span()
-            file_number = re.search(r"\d+", file.name[index1:index2])
-            new_file_number = str(int(file_number.group()) + 1)
-            file = file.parent / file.name.replace(file_number.group(), new_file_number)
+            converted_file_number = re.search(
+                r"\d+", converted_file.name[index1:index2]
+            )
+            new_file_number = str(int(converted_file_number.group()) + 1)
+            converted_file = converted_file.parent / converted_file.name.replace(
+                converted_file_number.group(), new_file_number
+            )
         else:
-            pass  # HERE GOES IN CASE THE FILE EXISTS BUT DOESN'T HAVE ALREADY A "(n)" INSIDE THE FOLDER
+            if (
+                len(converted_file.suffixes) > 2
+                and "".join(converted_file.suffixes) in compound_suffixes
+            ):
+                fname = (
+                    converted_file.name.split(".")[0]
+                    + "(1)"
+                    + "".join(converted_file.suffixes)
+                )
+                converted_file = converted_file.parent / fname
 
-        return file
+            fname = converted_file.stem + "(1)" + converted_file.suffix
+            converted_file = converted_file.parent / fname
+
+        # HERE GOES IN CASE THE FILE EXISTS BUT DOESN'T HAVE ALREADY A "(n)" INSIDE THE FOLDER
+
+        return converted_file
 
 
 if __name__ == "__main__":
