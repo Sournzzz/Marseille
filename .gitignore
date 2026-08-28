@@ -6,8 +6,6 @@ dist/
 wheels/
 *.egg-info
 *.log
-./testing_trash/
-./ideas_Marseile.md
-./corrections_and_plans.md
+./past_next/
 # Virtual environments
 .venv

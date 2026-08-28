@@ -1,6 +1,4 @@
 import logging, argparse
-from os import path
-from typing import Required
 from organizer import Organizer
 from utilities import DirContext
 
@@ -13,7 +11,7 @@ logging.basicConfig(
 )
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog="Marseille",
         description="A filesystem toolkit",
@@ -34,15 +32,23 @@ def parse_args():
     return args
 
 
-def main(args):
+def main(args: argparse.Namespace) -> int | None:
     match args.command:
         case "organizer":
-            if args.no_copy:
-                pass
             path_context = DirContext(args.path)
+
+            if not path_context.find_dir():
+                return 1
+
+            if args.no_copy:
+                organize = Organizer(path_context)
+                organize.organizer()
+                return 0
+
             path_context.copy_dir()
             organize = Organizer(path_context)
             organize.organizer()
+            return 0
 
 
 if __name__ == "__main__":

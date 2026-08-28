@@ -1,7 +1,12 @@
 from pathlib import Path
 from utilities import DirContext
-from pprint import pprint
 import logging, shutil, re
+
+"""
+THIS IS THE ORGANIZER TOOL
+MAKES A COPY AND OPERATES ON IT IF NOT INDICATED 
+"""
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel("INFO")
@@ -11,8 +16,13 @@ class Organizer:
     def __init__(self, context: DirContext) -> None:
         self.context = context
 
+    """
+    THIS IS THE MAIN TOOL, NEED SOME REFACTORING
+    IT IS SLOW TO DETECT MULTIPLE DUPLICATED FILES 
+    """
+
     def organizer(self) -> None:
-        logger.info("Ensuring the directory")
+        logger.info("Ensuring the directory...")
 
         dir_dict = self.context.dict_dir()
 
@@ -20,6 +30,7 @@ class Organizer:
             logger.warning("Couldn't create dir for: %s", self.context.full_path)
             return
 
+        logger.info("Starting the organization...")
         existing_dirs = {d.name.lower(): d for d in dir_dict["dirs"]}
 
         for extension in dir_dict["files"]:
@@ -42,11 +53,24 @@ class Organizer:
 
                     source_name.rename(new_path)
                     shutil.move(new_path, extension_path)
+
+                    logger.warning(
+                        "File already existed in the destiny dir, made a copy: %s to %s",
+                        file.name,
+                        new_path.name,
+                    )
+
                 else:
                     shutil.move(self.context.full_path / file, extension_path)
 
+        logger.info("DONE!")
+
     def file_dname_formatter(self, converted_file: Path) -> Path:
-        # I NEED TO SEPARATE THE  NUMBER OF (n) from the file name and verify it first
+        """
+        THIS FORMATTER USES REGEX
+        COVERS THE EDGE CASE OF file(1) EXISTS SO file(1) -> file(2)
+        OR file EXISTS SO file -> file(1)
+        """
 
         compound_suffixes = self.context.common_compound_suffixes
 
@@ -76,13 +100,4 @@ class Organizer:
             fname = converted_file.stem + "(1)" + converted_file.suffix
             converted_file = converted_file.parent / fname
 
-        # HERE GOES IN CASE THE FILE EXISTS BUT DOESN'T HAVE ALREADY A "(n)" INSIDE THE FOLDER
-
         return converted_file
-
-
-if __name__ == "__main__":
-    context_test = DirContext("Downloads_copy")
-    organizer_test = Organizer(context_test)
-
-    organizer_test.organizer()

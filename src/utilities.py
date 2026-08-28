@@ -46,6 +46,7 @@ class DirContext:
                 "The %s directory already exists. Couldn't make a copy.",
                 self.full_path.name,
             )
+            self.full_path = copy_dir_path
 
             return False
 
@@ -76,14 +77,7 @@ class DirContext:
                     ).append(Path(file.name))
 
                 else:
-                    # NEED TO ADD A LOG HERE
+                    logger.warning("File has no extension: %s", file.name)
                     continue
 
         return dict_structure
-
-
-if __name__ == "__main__":
-    directory = DirContext("Downloads")
-    directory.find_dir()
-    directory.copy_dir()
-    pprint(directory.dict_dir())
