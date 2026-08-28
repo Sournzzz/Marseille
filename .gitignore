@@ -6,6 +6,6 @@ dist/
 wheels/
 *.egg-info
 *.log
-past_next/
+ideas_Marseile.md
 # Virtual environments
 .venv
